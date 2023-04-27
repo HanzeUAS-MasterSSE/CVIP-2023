@@ -1,21 +1,21 @@
-# https://www.classicgame.com/game/Whack+a+Mole
-
 #imports
-# from re import template
+from re import template
 import cv2
 import pyautogui
 from time import sleep
+import numpy as np
 
 #No cooldown time
 pyautogui.PAUSE = 0
 
 #template and dimensions
-template = cv2.imread("mole_nose.png")
+template = cv2.imread("smole_nose.png")
 template_gray = cv2.cvtColor(template, cv2.COLOR_RGB2GRAY)
 template_w, template_h = template_gray.shape[::-1]
+# template_h, template_w = template_gray.shape
 
 # game window dimensions (NOTE: THESE DIFFER BY SCREEN RESOLUTION!)
-x, y, w, h = 535, 267, 905, 650
+x, y, w, h = 2150, 620, 570, 417
 
 #wait 3 seconds so we can set up the right screen
 sleep(3)
@@ -24,13 +24,16 @@ sleep(3)
 while True:
 
     #taking a screenshot and reading it in
-    pyautogui.screenshot("temp_image.png", (x, y, w, h))
-    image = cv2.imread("temp_image.png")
+    temp_image = pyautogui.screenshot(region= (x, y, w, h))
+    image = cv2.cvtColor(np.array(temp_image),cv2.COLOR_RGB2BGR)
+    # pyautogui.screenshot("temp_image.png", (x, y, w, h))
+    # image = cv2.imread("temp_image.png")
+    
     
     #sub loop - for template matching (finding max_val over and over again)
     while True:
 
-        #show what the computer sees
+        # show what the computer sees
         image_mini = cv2.resize(
             src = image,
             dsize = (450,350) #must be integer, not float
@@ -52,10 +55,10 @@ while True:
 
         #process greatest match if above threshold
         if max_val >= 0.8:
-            # pyautogui.click(
-            #    x = max_loc[0] + x, #screen x
-            #    y = max_loc[1] + y  #screen y
-            # )
+            pyautogui.click(
+               x = max_loc[0] + x, #screen x
+               y = max_loc[1] + y  #screen y
+            )
             
             #draw over the matches, so we can match the next highest match
             image = cv2.rectangle(
